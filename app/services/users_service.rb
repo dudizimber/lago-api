@@ -17,6 +17,9 @@ class UsersService < BaseService
   end
 
   def register(email, password, organization_name)
+    
+    return result.single_validation_failure!(error_code: 'signup_disabled') if ENV['LAGO_DISABLE_SIGNUP'] == 'true'
+
     result.user = User.find_or_initialize_by(email: email)
 
     if result.user.id
