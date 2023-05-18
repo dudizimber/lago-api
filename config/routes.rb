@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
         scope module: :customers do
           resources :applied_coupons, only: %i[destroy]
+          resources :applied_tax_rates, only: %i[create destroy], param: :tax_rate_code
         end
       end
 
@@ -67,6 +68,13 @@ Rails.application.routes.draw do
   resources :webhooks, only: [] do
     post 'stripe/:organization_id', to: 'webhooks#stripe', on: :collection, as: :stripe
     post 'gocardless/:organization_id', to: 'webhooks#gocardless', on: :collection, as: :gocardless
+  end
+
+  namespace :admin do
+    resources :organizations, only: %i[update]
+    resources :invoices do
+      post :regenerate, on: :member
+    end
   end
 
   match '*unmatched' => 'application#not_found',
